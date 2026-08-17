@@ -88,3 +88,7 @@ The v5 page also unregisters and clears old FlexWeek caches on first load.
 v6 restores a minimal service worker so Android/Chrome can install FlexWeek as a web app.
 The service worker is deliberately network-only and does not cache HTML, CSS, JavaScript or other assets.
 This avoids the stale mixed-version problem encountered with the earlier offline cache.
+
+## v7 icon path fix
+
+The icon assets are stored in the repository root. v7 updates both the web-app manifest and HTML icon references to use the root-level PNG paths, preventing 404 responses during Android/Chrome installation.
