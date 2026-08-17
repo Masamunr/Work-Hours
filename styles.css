@@ -477,19 +477,52 @@ dialog::backdrop {
 
 @media (max-width: 760px) {
   .week-overview {
-    grid-template-columns: repeat(5, minmax(110px, 1fr));
-    overflow-x: auto;
-    padding-bottom: 4px;
-    scroll-snap-type: x proximity;
+    grid-template-columns: 1fr;
+    gap: 8px;
   }
-  .overview-day { scroll-snap-align: start; }
+
+  .overview-day {
+    display: grid;
+    grid-template-columns: 70px 1fr auto;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+  }
+
+  .overview-day-top {
+    display: grid;
+    gap: 2px;
+  }
+
+  .overview-hours {
+    margin: 0;
+    font-size: 1.05rem;
+  }
+
+  .overview-meta {
+    display: grid;
+    justify-items: end;
+    gap: 2px;
+  }
+
+  .overview-absence {
+    grid-column: 1 / -1;
+    margin-top: 0;
+  }
 }
 
 @media (max-width: 470px) {
-  .week-overview {
-    grid-template-columns: repeat(5, minmax(104px, 1fr));
-    gap: 8px;
+  .overview-day {
+    grid-template-columns: 62px 1fr auto;
   }
-  .overview-day { padding: 10px; }
-  .overview-hours { font-size: .95rem; }
+  .overview-hours {
+    font-size: 1rem;
+  }
+}
+
+.app-version {
+  display: inline-block;
+  margin: 3px 0 0;
+  color: var(--muted);
+  font-size: .72rem;
 }

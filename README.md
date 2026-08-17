@@ -74,3 +74,11 @@ After publishing with GitHub Pages:
 4. Confirm.
 
 FlexWeek will then use its own icon and open in a standalone app-style window. After the first successful load it can also open offline.
+
+
+## v5 reliability change
+
+FlexWeek v5 deliberately removes the service-worker/offline cache used in the previous build.
+That cache could leave the browser displaying a mixture of old and new files after a GitHub Pages update.
+The app remains installable as a home-screen web app, but now prioritises reliable updates over offline caching.
+The v5 page also unregisters and clears old FlexWeek caches on first load.

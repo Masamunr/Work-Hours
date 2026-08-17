@@ -127,28 +127,58 @@ function downloadBackup() {
   renderBackupStatus();
 }
 
+function normaliseBackup(payload) {
+  if (!payload || typeof payload !== "object") {
+    throw new Error("The selected file is not a valid FlexWeek backup.");
+  }
+
+  // Current backup format.
+  if (payload.app === "FlexWeek" && payload.data && payload.data.weeks) {
+    return {
+      data: payload.data,
+      defaults: payload.defaults || INITIAL_DEFAULTS,
+      theme: payload.theme || "light"
+    };
+  }
+
+  // Compatibility with an older/simple export that stored the database directly.
+  if (payload.weeks && typeof payload.weeks === "object") {
+    return {
+      data: payload,
+      defaults: INITIAL_DEFAULTS,
+      theme: "light"
+    };
+  }
+
+  // Compatibility with exports that wrapped the DB under "db".
+  if (payload.db && payload.db.weeks) {
+    return {
+      data: payload.db,
+      defaults: payload.defaults || INITIAL_DEFAULTS,
+      theme: payload.theme || "light"
+    };
+  }
+
+  throw new Error("This file does not contain recognisable FlexWeek records.");
+}
+
 function validateBackup(payload) {
-  if (!payload || payload.app !== "FlexWeek") {
-    throw new Error("This does not appear to be a FlexWeek backup.");
-  }
-  if (!payload.data || typeof payload.data !== "object" || !payload.data.weeks) {
-    throw new Error("The FlexWeek backup is missing week data.");
-  }
-  if (!payload.defaults || !payload.defaults.start || !payload.defaults.finish) {
-    throw new Error("The FlexWeek backup is missing default settings.");
-  }
+  normaliseBackup(payload);
   return true;
 }
 
 function restoreFromBackup(payload) {
-  validateBackup(payload);
-  db = payload.data;
+  const normalised = normaliseBackup(payload);
+  db = normalised.data;
   saveDb();
-  saveDefaults({ ...INITIAL_DEFAULTS, ...payload.defaults });
-  if (payload.theme === "dark" || payload.theme === "light") {
-    localStorage.setItem(THEME_KEY, payload.theme);
-    document.documentElement.dataset.theme = payload.theme;
+  saveDefaults({ ...INITIAL_DEFAULTS, ...normalised.defaults });
+
+  if (normalised.theme === "dark" || normalised.theme === "light") {
+    localStorage.setItem(THEME_KEY, normalised.theme);
+    document.documentElement.dataset.theme = normalised.theme;
   }
+
+  localStorage.setItem(LAST_BACKUP_KEY, String(Date.now()));
   render();
 }
 
@@ -460,6 +490,7 @@ function renderDefaults() {
 
 
 function renderWeekOverview() {
+  if (!els.weekOverview || !els.overviewWeekTitle) return;
   const week = weekData();
   els.overviewWeekTitle.textContent = `Week commencing ${fullDisplayDate(currentWeek)}`;
   els.weekOverview.innerHTML = "";
@@ -491,16 +522,24 @@ function renderWeekOverview() {
 }
 
 
+function safeRender(fn, name) {
+  try {
+    fn();
+  } catch (error) {
+    console.error(`FlexWeek could not render ${name}:`, error);
+  }
+}
+
 function render() {
   els.weekPicker.value = getWeekKey();
-  renderDefaults();
-  renderWeekOverview();
-  renderDays();
-  renderSummary();
-  renderAbsences();
-  renderHistory();
-  populateAbsenceDays();
-  renderBackupStatus();
+  safeRender(renderDefaults, "defaults");
+  safeRender(renderWeekOverview, "weekly overview");
+  safeRender(renderDays, "working days");
+  safeRender(renderSummary, "summary");
+  safeRender(renderAbsences, "absence");
+  safeRender(renderHistory, "history");
+  safeRender(populateAbsenceDays, "absence day list");
+  safeRender(renderBackupStatus, "backup status");
 }
 
 function escapeHtml(value) {
@@ -554,7 +593,8 @@ els.restoreFile.addEventListener("change", async () => {
     restoreFromBackup(payload);
     alert("FlexWeek backup restored successfully.");
   } catch (error) {
-    alert(error && error.message ? error.message : "The backup could not be restored.");
+    const reason = error && error.message ? error.message : "Unknown error";
+    alert(`The backup could not be restored.\n\n${reason}`);
   } finally {
     els.restoreFile.value = "";
   }
