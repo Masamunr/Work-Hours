@@ -60,3 +60,17 @@ GitHub will then provide the Pages URL.
 ## Current limitations
 
 Because history is browser-local, it does not automatically sync between a phone and computer. A future version could add manual JSON export/import without introducing accounts or cloud storage.
+
+
+## Install as an app
+
+FlexWeek includes a web-app manifest, app icons and an offline service worker.
+
+After publishing with GitHub Pages:
+
+1. Open FlexWeek in Chrome on Android.
+2. Open the browser menu.
+3. Choose **Add to Home screen** or **Install app**.
+4. Confirm.
+
+FlexWeek will then use its own icon and open in a standalone app-style window. After the first successful load it can also open offline.
