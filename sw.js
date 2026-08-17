@@ -1,10 +1,11 @@
-const CACHE = "flexweek-v1";
+const CACHE = "flexweek-v2";
 const ASSETS = [
   "./",
   "./index.html",
   "./styles.css",
   "./app.js",
   "./manifest.webmanifest",
+  "./favicon.png",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/icon-maskable-192.png",

@@ -32,5 +32,11 @@
       "type": "image/png",
       "purpose": "maskable"
     }
+  ],
+  "id": "./",
+  "orientation": "portrait-primary",
+  "categories": [
+    "productivity",
+    "utilities"
   ]
 }

@@ -38,6 +38,8 @@ const els = {
   backupBannerText: document.getElementById("backupBannerText"),
   lastBackupText: document.getElementById("lastBackupText"),
   restoreFile: document.getElementById("restoreFile"),
+  weekOverview: document.getElementById("weekOverview"),
+  overviewWeekTitle: document.getElementById("overviewWeekTitle"),
 };
 
 let db = loadDb();
@@ -456,9 +458,43 @@ function renderDefaults() {
   els.defaultLunch.value = defaults.lunchMinutes;
 }
 
+
+function renderWeekOverview() {
+  const week = weekData();
+  els.overviewWeekTitle.textContent = `Week commencing ${fullDisplayDate(currentWeek)}`;
+  els.weekOverview.innerHTML = "";
+
+  week.days.forEach((day, index) => {
+    const card = document.createElement("article");
+    card.className = "overview-day";
+    const date = addDays(currentWeek, index);
+    const worked = workMinutesForDay(day);
+
+    const absenceForDay = week.absences
+      .filter(a => Number(a.dayIndex) === index)
+      .reduce((sum, a) => sum + Number(a.hours) * 60, 0);
+
+    card.innerHTML = `
+      <div class="overview-day-top">
+        <strong>${DAYS[index].slice(0,3)}</strong>
+        <span>${displayDate(date)}</span>
+      </div>
+      <div class="overview-hours">${day.start}–${day.finish}</div>
+      <div class="overview-meta">
+        <span>${day.lunchMinutes}m lunch</span>
+        <strong>${formatMinutes(worked)}</strong>
+      </div>
+      ${absenceForDay > 0 ? `<div class="overview-absence">Absence ${formatMinutes(absenceForDay)}</div>` : ""}
+    `;
+    els.weekOverview.appendChild(card);
+  });
+}
+
+
 function render() {
   els.weekPicker.value = getWeekKey();
   renderDefaults();
+  renderWeekOverview();
   renderDays();
   renderSummary();
   renderAbsences();
