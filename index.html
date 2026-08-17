@@ -5,11 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>FlexWeek</title>
   <meta name="theme-color" content="#315f72">
-  <link rel="manifest" href="manifest.webmanifest?v=5">
-  <link rel="icon" type="image/png" sizes="64x64" href="favicon.png?v=5">
-  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png?v=5">
-  <link rel="apple-touch-icon" href="icons/icon-192.png?v=5">
-  <link rel="stylesheet" href="styles.css?v=5">
+  <link rel="manifest" href="manifest.webmanifest?v=6">
+  <link rel="icon" type="image/png" sizes="64x64" href="favicon.png?v=6">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png?v=6">
+  <link rel="apple-touch-icon" href="icons/icon-192.png?v=6">
+  <link rel="stylesheet" href="styles.css?v=6">
 </head>
 <body>
   <main class="app-shell">
@@ -18,7 +18,7 @@
         <p class="eyebrow">PERSONAL WORKING HOURS</p>
         <h1>FlexWeek</h1>
         <p class="subtle">Plan flexible working hours, track absences, and keep a weekly history.</p>
-        <p id="appVersion" class="app-version">v5</p>
+        <p id="appVersion" class="app-version">v6</p>
       </div>
       <button id="themeToggle" class="secondary-btn" type="button" aria-label="Toggle theme">Theme</button>
     </header>
@@ -203,21 +203,16 @@
     </form>
   </dialog>
 
+  <script src="app.js?v=6"></script>
 
   <script>
-    // FlexWeek v5: remove the older offline cache layer that could serve mixed versions.
     if ("serviceWorker" in navigator) {
-      navigator.serviceWorker.getRegistrations().then(registrations => {
-        registrations.forEach(registration => registration.unregister());
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js", { updateViaCache: "none" })
+          .catch(error => console.error("FlexWeek service worker registration failed:", error));
       });
-    }
-    if ("caches" in window) {
-      caches.keys().then(keys => keys.forEach(key => {
-        if (key.startsWith("flexweek-")) caches.delete(key);
-      }));
     }
   </script>
 
-  <script src="app.js?v=5"></script>
 </body>
 </html>

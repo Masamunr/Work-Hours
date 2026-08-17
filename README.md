@@ -82,3 +82,9 @@ FlexWeek v5 deliberately removes the service-worker/offline cache used in the pr
 That cache could leave the browser displaying a mixture of old and new files after a GitHub Pages update.
 The app remains installable as a home-screen web app, but now prioritises reliable updates over offline caching.
 The v5 page also unregisters and clears old FlexWeek caches on first load.
+
+## v6 PWA installation
+
+v6 restores a minimal service worker so Android/Chrome can install FlexWeek as a web app.
+The service worker is deliberately network-only and does not cache HTML, CSS, JavaScript or other assets.
+This avoids the stale mixed-version problem encountered with the earlier offline cache.

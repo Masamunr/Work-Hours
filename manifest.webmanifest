@@ -2,8 +2,8 @@
   "name": "FlexWeek",
   "short_name": "FlexWeek",
   "description": "Personal flexible working-hours planner",
-  "start_url": "./",
-  "scope": "./",
+  "start_url": "/Work-Hours/",
+  "scope": "/Work-Hours/",
   "display": "standalone",
   "background_color": "#f6f7f8",
   "theme_color": "#315f72",
@@ -33,10 +33,14 @@
       "purpose": "maskable"
     }
   ],
-  "id": "./",
+  "id": "/Work-Hours/",
   "orientation": "portrait-primary",
   "categories": [
     "productivity",
     "utilities"
+  ],
+  "display_override": [
+    "standalone",
+    "minimal-ui"
   ]
 }
