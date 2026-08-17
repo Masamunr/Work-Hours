@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FlexWeek</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">PERSONAL WORKING HOURS</p>
+        <h1>FlexWeek</h1>
+        <p class="subtle">Plan flexible working hours, track absences, and keep a weekly history.</p>
+      </div>
+      <button id="themeToggle" class="secondary-btn" type="button" aria-label="Toggle theme">Theme</button>
+    </header>
+
+    <section class="summary-grid" aria-label="Weekly summary">
+      <article class="summary-card">
+        <span>Target</span>
+        <strong id="targetHours">40:00</strong>
+      </article>
+      <article class="summary-card">
+        <span>Worked</span>
+        <strong id="workedHours">0:00</strong>
+      </article>
+      <article class="summary-card">
+        <span>Absence counted</span>
+        <strong id="absenceHours">0:00</strong>
+      </article>
+      <article class="summary-card">
+        <span>Remaining</span>
+        <strong id="remainingHours">40:00</strong>
+      </article>
+    </section>
+
+    <section id="statusBanner" class="status-banner" aria-live="polite">
+      <strong id="statusTitle">40 hours remaining</strong>
+      <span id="statusText">Plan your week below.</span>
+    </section>
+
+    <section id="backupBanner" class="backup-banner" aria-live="polite" hidden>
+      <div>
+        <strong id="backupBannerTitle">Backup recommended</strong>
+        <span id="backupBannerText">Your records have not been backed up recently.</span>
+      </div>
+      <button id="backupNowBanner" class="primary-btn" type="button">Back up now</button>
+    </section>
+
+    <section class="week-controls card">
+      <div class="week-nav">
+        <button id="prevWeek" class="secondary-btn" type="button">← Previous</button>
+        <label>
+          Week commencing
+          <input id="weekPicker" type="date">
+        </label>
+        <button id="nextWeek" class="secondary-btn" type="button">Next →</button>
+      </div>
+      <div class="week-actions">
+        <button id="copyPrevious" class="secondary-btn" type="button">Copy previous week</button>
+        <button id="resetWeek" class="danger-btn" type="button">Reset week</button>
+      </div>
+    </section>
+
+
+    <section class="card">
+      <div class="section-heading">
+        <div>
+          <h2>Defaults</h2>
+          <p>New weeks use these times. Changing them does not overwrite weeks you have already planned.</p>
+        </div>
+      </div>
+      <div class="week-nav">
+        <label>
+          Default start
+          <input id="defaultStart" type="time">
+        </label>
+        <label>
+          Default finish
+          <input id="defaultFinish" type="time">
+        </label>
+        <label>
+          Default lunch (minutes)
+          <input id="defaultLunch" type="number" min="0" max="240" step="5">
+        </label>
+        <button id="saveDefaults" class="primary-btn" type="button">Save defaults</button>
+      </div>
+    </section>
+
+
+    <section class="card">
+      <div class="section-heading">
+        <div>
+          <h2>Data &amp; backup</h2>
+          <p>Your records stay in this browser unless you export a backup.</p>
+        </div>
+      </div>
+      <div class="backup-panel">
+        <div class="backup-status">
+          <span>Last backup</span>
+          <strong id="lastBackupText">Never</strong>
+        </div>
+        <div class="week-actions">
+          <button id="backupNow" class="primary-btn" type="button">Back up now</button>
+          <button id="restoreBackup" class="secondary-btn" type="button">Restore backup</button>
+          <input id="restoreFile" type="file" accept=".json,application/json" hidden>
+        </div>
+      </div>
+      <p class="backup-note">A backup is a small JSON file containing your saved weeks, absences, defaults and app settings. Keep it somewhere safe.</p>
+    </section>
+
+    <section class="card">
+      <div class="section-heading">
+        <div>
+          <h2>Working week</h2>
+          <p>Working time is calculated as finish minus start minus lunch.</p>
+        </div>
+      </div>
+      <div id="daysContainer" class="days-grid"></div>
+    </section>
+
+    <section class="card">
+      <div class="section-heading">
+        <div>
+          <h2>Absence</h2>
+          <p>Log full or partial-day absence. Choose whether it counts toward your 40-hour contractual total.</p>
+        </div>
+        <button id="addAbsence" class="primary-btn" type="button">+ Add absence</button>
+      </div>
+      <div id="absenceList" class="absence-list"></div>
+    </section>
+
+    <section class="card">
+      <div class="section-heading">
+        <div>
+          <h2>Weekly history</h2>
+          <p>Weeks are saved automatically on this device.</p>
+        </div>
+      </div>
+      <div id="historyList" class="history-list"></div>
+    </section>
+  </main>
+
+  <dialog id="absenceDialog">
+    <form method="dialog" class="dialog-card" id="absenceForm">
+      <h2>Add absence</h2>
+
+      <label>
+        Day
+        <select id="absenceDay" required></select>
+      </label>
+
+      <label>
+        Type
+        <select id="absenceType">
+          <option>Annual leave</option>
+          <option>Sickness</option>
+          <option>Medical appointment</option>
+          <option>Training</option>
+          <option>Unpaid leave</option>
+          <option>Other</option>
+        </select>
+      </label>
+
+      <label>
+        Hours
+        <input id="absenceDuration" type="number" min="0.25" max="24" step="0.25" value="8" required>
+      </label>
+
+      <label class="check-row">
+        <input id="absenceCounts" type="checkbox" checked>
+        <span>Count this absence toward the 40-hour weekly total</span>
+      </label>
+
+      <label>
+        Note <span class="optional">(optional)</span>
+        <input id="absenceNote" type="text" maxlength="120" placeholder="e.g. dentist appointment">
+      </label>
+
+      <div class="dialog-actions">
+        <button id="cancelAbsence" class="secondary-btn" type="button">Cancel</button>
+        <button class="primary-btn" type="submit">Save absence</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
